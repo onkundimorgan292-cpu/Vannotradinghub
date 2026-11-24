@@ -41,7 +41,7 @@
       font-variant-numeric: tabular-nums;
     }
     .glass-panel {
-      background: rgba(13, 17, 28, 0.88);
+      background: rgba(13, 17, 28, 0.9);
       backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -73,6 +73,54 @@
 </head>
 <body class="min-h-screen antialiased selection:bg-amber-400/20 selection:text-amber-300">
 
+  <!-- ========================================================= -->
+  <!-- 0. BOOT & TOOL SYNC SPLASH OVERLAY                        -->
+  <!-- ========================================================= -->
+  <div id="bootLoader" class="fixed inset-0 z-[70] flex items-center justify-center bg-[#06080F] p-6 transition-opacity duration-500">
+    <div class="w-full max-w-md glass-panel rounded-2xl p-7 gold-border gold-glow space-y-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-lg shadow-amber-500/20">
+            AQ
+          </div>
+          <div>
+            <div class="font-bold text-lg text-white tracking-tight">AetherQuant <span class="text-amber-400">AI</span></div>
+            <div class="text-[11px] font-mono-num text-emerald-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-live-dot"></span>
+              <span>INITIALIZING TERMINAL TOOLS</span>
+            </div>
+          </div>
+        </div>
+        <span id="bootPercent" class="font-mono-num text-sm font-bold text-amber-400">0%</span>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono-num text-slate-300">
+          <span id="bootStatusText">Booting core trading engines...</span>
+          <span class="text-slate-500">v4.8</span>
+        </div>
+        <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-white/10">
+          <div id="bootProgressBar" class="h-full w-0 bg-gradient-to-r from-amber-400 via-amber-300 to-emerald-400 transition-all duration-200 rounded-full"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5 text-[11px] font-mono-num">
+        <div id="syncItemCandles" class="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-slate-400">
+          ○ Candlestick &amp; EMA Feed
+        </div>
+        <div id="syncItemClocks" class="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-slate-400">
+          ○ Market &amp; Candle Clocks
+        </div>
+        <div id="syncItemScanner" class="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-slate-400">
+          ○ AI Market Scanner
+        </div>
+        <div id="syncItemVault" class="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 text-slate-400">
+          ○ Client Wallet &amp; Ledger
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 
@@ -84,7 +132,6 @@
     <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="w-full max-w-5xl grid lg:grid-cols-12 glass-panel rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-      <!-- Left Showcase Panel -->
       <div class="lg:col-span-6 p-8 sm:p-10 bg-gradient-to-br from-[#0D1322] via-[#090D16] to-[#06080F] border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-3 mb-8">
@@ -104,7 +151,7 @@
             Institutional AI Market Scanning &amp; Automated Execution.
           </h1>
           <p class="text-slate-400 text-sm leading-relaxed mb-8">
-            Create your client account, deposit via M-Pesa Buy Goods Till <strong class="text-emerald-400">1957147</strong>, monitor live TradingView-style candlesticks with market &amp; candle countdowns, and run automated AI trades.
+            Create your client account to scan live markets, analyze interactive candlestick charts with live session and candle close countdowns, fund your wallet via Deposit, and run automated bot trades.
           </p>
 
           <div class="grid grid-cols-2 gap-3 mb-6">
@@ -120,18 +167,17 @@
         </div>
 
         <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-          <span id="dbModeLabel">Multi-Client Account Vault</span>
-          <span class="text-emerald-400 font-mono-num">M-Pesa Till 1957147</span>
+          <span id="dbModeLabel">256-Bit Encrypted Client Vault</span>
+          <span class="text-emerald-400 font-mono-num">Live Market Feed Ready</span>
         </div>
       </div>
 
-      <!-- Right Auth Form -->
       <div class="lg:col-span-6 p-8 sm:p-10 flex flex-col justify-center">
         <div class="flex gap-2 p-1 bg-slate-900/90 rounded-xl border border-white/10 mb-6">
-          <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-amber-500 text-slate-950 transition cursor-pointer">
+          <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-amber-500 text-slate-950 transition cursor-pointer">
             Client Sign In
           </button>
-          <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
+          <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
             Create Account
           </button>
         </div>
@@ -171,7 +217,7 @@
               class="w-full px-4 py-3 rounded-xl bg-slate-950/90 border border-white/10 text-sm text-white focus:outline-none focus:border-amber-400 transition" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1.5">M-Pesa / Mobile Number</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Mobile / M-Pesa Number</label>
             <input id="regPhone" type="tel" required placeholder="0712 345 678"
               class="w-full px-4 py-3 rounded-xl bg-slate-950/90 border border-white/10 text-sm text-white focus:outline-none focus:border-amber-400 transition" />
           </div>
@@ -215,14 +261,14 @@
         <!-- Wallet & Currency Controls -->
         <div class="flex items-center gap-2 sm:gap-3">
           <div class="flex items-center bg-slate-950/90 border border-white/10 rounded-lg p-0.5 text-xs font-mono-num">
-            <button id="currUsdBtn" onclick="setCurrency('USD')" class="px-2.5 py-1 rounded-md bg-amber-400 text-slate-950 font-bold transition cursor-pointer">USD</button>
-            <button id="currKesBtn" onclick="setCurrency('KES')" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-semibold transition cursor-pointer">KES</button>
+            <button type="button" id="currUsdBtn" onclick="setCurrency('USD')" class="px-2.5 py-1 rounded-md bg-amber-400 text-slate-950 font-bold transition cursor-pointer">USD</button>
+            <button type="button" id="currKesBtn" onclick="setCurrency('KES')" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-semibold transition cursor-pointer">KES</button>
           </div>
 
-          <button onclick="openWalletModal('deposit')" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-emerald-500/15 transition cursor-pointer">
+          <button type="button" onclick="openWalletModal('deposit')" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-emerald-500/15 transition cursor-pointer">
             <span>+ Deposit</span>
           </button>
-          <button onclick="openWalletModal('withdraw')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-white/10 font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer">
+          <button type="button" onclick="openWalletModal('withdraw')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-white/10 font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer">
             <span>↗ Withdraw</span>
           </button>
         </div>
@@ -235,10 +281,10 @@
             </div>
             <div class="text-left">
               <div id="userDisplayName" class="text-xs font-semibold text-white leading-none">Client Trader</div>
-              <div class="text-[10px] text-emerald-400 font-mono-num mt-0.5">Till 1957147</div>
+              <div class="text-[10px] text-emerald-400 font-mono-num mt-0.5">Verified Client</div>
             </div>
           </div>
-          <button onclick="handleLogout()" title="Log Out" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 text-xs font-semibold transition cursor-pointer">
+          <button type="button" onclick="handleLogout()" title="Log Out" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 text-xs font-semibold transition cursor-pointer">
             Log Out
           </button>
         </div>
@@ -255,7 +301,7 @@
             </div>
             <div class="hidden sm:flex items-center gap-1.5 text-slate-400 font-mono-num">
               <span>Nairobi (EAT):</span>
-              <span id="eatClockText" class="text-white font-semibold">18:58:00</span>
+              <span id="eatClockText" class="text-white font-semibold">19:15:00</span>
             </div>
           </div>
 
@@ -296,31 +342,31 @@
             <span class="px-2 py-0.5 rounded-md text-[10px] font-mono-num font-semibold bg-emerald-500/15 text-emerald-400">LIVE</span>
           </div>
           <div id="kpiTotalEquity" class="text-2xl sm:text-3xl font-extrabold font-mono-num text-white tracking-tight">$0.00</div>
-          <div id="kpiTotalEquitySub" class="text-xs text-slate-400 font-mono-num mt-1">≈ KES 0</div>
+          <div id="kpiTotalEquitySub" class="text-xs text-slate-400 font-mono-num mt-1">≈ KES 0.00</div>
         </div>
 
         <div class="glass-panel rounded-2xl p-5">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-medium text-slate-400">Available Wallet</span>
-            <button onclick="openWalletModal('deposit')" class="text-[11px] text-amber-400 hover:underline font-semibold cursor-pointer">+ Deposit</button>
+            <button type="button" onclick="openWalletModal('deposit')" class="text-[11px] text-amber-400 hover:underline font-semibold cursor-pointer">+ Deposit</button>
           </div>
           <div id="kpiAvailableWallet" class="text-2xl sm:text-3xl font-extrabold font-mono-num text-white tracking-tight">$0.00</div>
-          <div id="kpiAvailableWalletSub" class="text-xs text-slate-400 font-mono-num mt-1">Till 1957147 &amp; Payouts</div>
+          <div id="kpiAvailableWalletSub" class="text-xs text-slate-400 font-mono-num mt-1">Ready for Bot Pool or Payout</div>
         </div>
 
         <div class="glass-panel rounded-2xl p-5">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-medium text-slate-400">Allocated to AI Trading Bot</span>
-            <button onclick="openAllocationModal()" class="text-[11px] text-amber-400 hover:underline font-semibold cursor-pointer">Adjust Pool</button>
+            <button type="button" onclick="openAllocationModal()" class="text-[11px] text-amber-400 hover:underline font-semibold cursor-pointer">Adjust Pool</button>
           </div>
           <div id="kpiBotCapital" class="text-2xl sm:text-3xl font-extrabold font-mono-num text-amber-400 tracking-tight">$0.00</div>
-          <div class="text-xs text-slate-400 font-mono-num mt-1">Active Bot Trading Pool</div>
+          <div class="text-xs text-slate-400 font-mono-num mt-1">Auto-Compounding Enabled</div>
         </div>
 
         <div class="glass-panel rounded-2xl p-5">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-medium text-slate-400">Net AI Bot Profit</span>
-            <span id="kpiWinRateBadge" class="px-2 py-0.5 rounded-md text-[10px] font-mono-num font-semibold bg-amber-500/15 text-amber-300">AI Engine</span>
+            <span id="kpiWinRateBadge" class="px-2 py-0.5 rounded-md text-[10px] font-mono-num font-semibold bg-amber-500/15 text-amber-300">Win Rate 84.6%</span>
           </div>
           <div id="kpiNetProfit" class="text-2xl sm:text-3xl font-extrabold font-mono-num text-emerald-400 tracking-tight">+$0.00</div>
           <div id="kpiTradesCount" class="text-xs text-slate-400 font-mono-num mt-1">0 Executed AI Trades</div>
@@ -333,24 +379,24 @@
         <div class="lg:col-span-8 glass-panel rounded-2xl p-4 sm:p-5 flex flex-col">
           <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button onclick="selectPair('BTC/USDT')" id="pairBtn-BTC/USDT" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition cursor-pointer">BTC/USDT</button>
-              <button onclick="selectPair('XAU/USD')" id="pairBtn-XAU/USD" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10 transition cursor-pointer">XAU/USD (Gold)</button>
-              <button onclick="selectPair('ETH/USDT')" id="pairBtn-ETH/USDT" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10 transition cursor-pointer">ETH/USDT</button>
-              <button onclick="selectPair('EUR/USD')" id="pairBtn-EUR/USD" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10 transition cursor-pointer">EUR/USD</button>
+              <button type="button" onclick="selectPair('BTC/USDT')" id="pairBtn-BTC/USDT" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition cursor-pointer">BTC/USDT</button>
+              <button type="button" onclick="selectPair('XAU/USD')" id="pairBtn-XAU/USD" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10 transition cursor-pointer">XAU/USD (Gold)</button>
+              <button type="button" onclick="selectPair('ETH/USDT')" id="pairBtn-ETH/USDT" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10 transition cursor-pointer">ETH/USDT</button>
+              <button type="button" onclick="selectPair('EUR/USD')" id="pairBtn-EUR/USD" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10 transition cursor-pointer">EUR/USD</button>
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
               <div class="flex items-center bg-slate-950/90 border border-white/10 rounded-lg p-0.5 text-[11px] font-mono-num">
-                <button onclick="setTimeframe('1M', 60)" id="tf-1M" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">1M</button>
-                <button onclick="setTimeframe('5M', 300)" id="tf-5M" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">5M</button>
-                <button onclick="setTimeframe('15M', 900)" id="tf-15M" class="tf-btn px-2 py-1 rounded bg-white/15 text-amber-300 font-bold cursor-pointer">15M</button>
-                <button onclick="setTimeframe('1H', 3600)" id="tf-1H" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">1H</button>
-                <button onclick="setTimeframe('4H', 14400)" id="tf-4H" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">4H</button>
-                <button onclick="setTimeframe('1D', 86400)" id="tf-1D" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">1D</button>
+                <button type="button" onclick="setTimeframe('1M', 60)" id="tf-1M" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">1M</button>
+                <button type="button" onclick="setTimeframe('5M', 300)" id="tf-5M" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">5M</button>
+                <button type="button" onclick="setTimeframe('15M', 900)" id="tf-15M" class="tf-btn px-2 py-1 rounded bg-white/15 text-amber-300 font-bold cursor-pointer">15M</button>
+                <button type="button" onclick="setTimeframe('1H', 3600)" id="tf-1H" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">1H</button>
+                <button type="button" onclick="setTimeframe('4H', 14400)" id="tf-4H" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">4H</button>
+                <button type="button" onclick="setTimeframe('1D', 86400)" id="tf-1D" class="tf-btn px-2 py-1 rounded text-slate-400 hover:text-white cursor-pointer">1D</button>
               </div>
 
-              <button onclick="toggleIndicator('ema')" id="ind-ema" class="px-2.5 py-1 rounded-lg text-[11px] font-mono-num font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 cursor-pointer">EMA 20/50</button>
-              <button onclick="toggleIndicator('bb')" id="ind-bb" class="px-2.5 py-1 rounded-lg text-[11px] font-mono-num font-semibold bg-white/5 text-slate-400 border border-white/10 cursor-pointer">BB</button>
+              <button type="button" onclick="toggleIndicator('ema')" id="ind-ema" class="px-2.5 py-1 rounded-lg text-[11px] font-mono-num font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 cursor-pointer">EMA 20/50</button>
+              <button type="button" onclick="toggleIndicator('bb')" id="ind-bb" class="px-2.5 py-1 rounded-lg text-[11px] font-mono-num font-semibold bg-white/5 text-slate-400 border border-white/10 cursor-pointer">BB</button>
             </div>
           </div>
 
@@ -388,7 +434,7 @@
                 <h2 class="text-base font-bold text-white">AetherBot v4.8 Engine</h2>
                 <p class="text-xs text-slate-400">Multi-pair neural order execution</p>
               </div>
-              <button id="botMasterToggle" onclick="toggleBotEngine()" class="relative inline-flex h-8 w-16 items-center rounded-full bg-emerald-500 transition-colors cursor-pointer p-1">
+              <button type="button" id="botMasterToggle" onclick="toggleBotEngine()" class="relative inline-flex h-8 w-16 items-center rounded-full bg-emerald-500 transition-colors cursor-pointer p-1">
                 <span id="botToggleKnob" class="inline-block h-6 w-6 transform rounded-full bg-slate-950 font-bold text-[10px] flex items-center justify-center translate-x-8 transition-transform shadow">ON</span>
               </button>
             </div>
@@ -396,15 +442,15 @@
             <div class="mb-4">
               <label class="block text-[11px] uppercase tracking-wider text-slate-400 mb-2">Execution Risk Profile</label>
               <div class="grid grid-cols-3 gap-2">
-                <button onclick="setRiskMode('Conservative')" id="risk-Conservative" class="risk-btn py-2 px-2 rounded-xl text-xs font-semibold bg-white/5 text-slate-300 border border-white/10 transition cursor-pointer">
+                <button type="button" onclick="setRiskMode('Conservative')" id="risk-Conservative" class="risk-btn py-2 px-2 rounded-xl text-xs font-semibold bg-white/5 text-slate-300 border border-white/10 transition cursor-pointer">
                   Conservative
                   <span class="block text-[10px] text-slate-400 font-mono-num">Low Risk</span>
                 </button>
-                <button onclick="setRiskMode('Balanced')" id="risk-Balanced" class="risk-btn py-2 px-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/50 transition cursor-pointer">
+                <button type="button" onclick="setRiskMode('Balanced')" id="risk-Balanced" class="risk-btn py-2 px-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/50 transition cursor-pointer">
                   Balanced
                   <span class="block text-[10px] text-amber-400/80 font-mono-num">Mid Risk</span>
                 </button>
-                <button onclick="setRiskMode('Aggressive')" id="risk-Aggressive" class="risk-btn py-2 px-2 rounded-xl text-xs font-semibold bg-white/5 text-slate-300 border border-white/10 transition cursor-pointer">
+                <button type="button" onclick="setRiskMode('Aggressive')" id="risk-Aggressive" class="risk-btn py-2 px-2 rounded-xl text-xs font-semibold bg-white/5 text-slate-300 border border-white/10 transition cursor-pointer">
                   Aggressive
                   <span class="block text-[10px] text-slate-400 font-mono-num">High Risk</span>
                 </button>
@@ -428,7 +474,7 @@
               </div>
             </div>
 
-            <button onclick="executeManualBotTrade()" class="w-full py-2.5 mb-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs transition cursor-pointer">
+            <button type="button" onclick="executeManualBotTrade()" class="w-full py-2.5 mb-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs transition cursor-pointer">
               ⚡ Scan &amp; Execute AI Trade Now
             </button>
 
@@ -475,12 +521,12 @@
           <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <div>
               <h3 class="text-base font-bold text-white">Deposits &amp; Withdrawals Ledger</h3>
-              <p class="text-xs text-slate-400">M-Pesa Till <strong class="text-emerald-400">1957147</strong> &amp; Wallet History</p>
+              <p class="text-xs text-slate-400">Client deposit &amp; withdrawal history</p>
             </div>
             <div class="flex items-center gap-1.5 text-xs">
-              <button onclick="filterLedger('ALL')" id="ledg-ALL" class="ledg-btn px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-bold cursor-pointer">All</button>
-              <button onclick="filterLedger('DEPOSIT')" id="ledg-DEPOSIT" class="ledg-btn px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 cursor-pointer">Deposits</button>
-              <button onclick="filterLedger('WITHDRAWAL')" id="ledg-WITHDRAWAL" class="ledg-btn px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 cursor-pointer">Withdrawals</button>
+              <button type="button" onclick="filterLedger('ALL')" id="ledg-ALL" class="ledg-btn px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-bold cursor-pointer">All</button>
+              <button type="button" onclick="filterLedger('DEPOSIT')" id="ledg-DEPOSIT" class="ledg-btn px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 cursor-pointer">Deposits</button>
+              <button type="button" onclick="filterLedger('WITHDRAWAL')" id="ledg-WITHDRAWAL" class="ledg-btn px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 cursor-pointer">Withdrawals</button>
             </div>
           </div>
 
@@ -488,7 +534,7 @@
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="border-b border-white/10 text-[11px] uppercase text-slate-400">
-                  <th class="py-2.5 px-2">Type &amp; Method</th>
+                  <th class="py-2.5 px-2">Type &amp; Channel</th>
                   <th class="py-2.5 px-2">Reference</th>
                   <th class="py-2.5 px-2">Status</th>
                   <th class="py-2.5 px-2 text-right">Amount</th>
@@ -503,42 +549,43 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- 3. DEPOSIT (TILL 1957147) & WITHDRAWAL MODAL              -->
+  <!-- 3. DEPOSIT & WITHDRAWAL MODAL (TILL SHOWN ON DEPOSIT)      -->
   <!-- ========================================================= -->
   <div id="walletModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
     <div class="glass-panel w-full max-w-lg rounded-2xl border border-white/15 shadow-2xl overflow-hidden my-auto">
       <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/70">
         <div class="flex items-center gap-2">
-          <button id="modalTabDeposit" onclick="switchWalletTab('deposit')" class="px-4 py-1.5 rounded-lg text-sm font-bold bg-emerald-500 text-slate-950 transition cursor-pointer">
+          <button type="button" id="modalTabDeposit" onclick="switchWalletTab('deposit')" class="px-4 py-1.5 rounded-lg text-sm font-bold bg-emerald-500 text-slate-950 transition cursor-pointer">
             Deposit Funds
           </button>
-          <button id="modalTabWithdraw" onclick="switchWalletTab('withdraw')" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition cursor-pointer">
+          <button type="button" id="modalTabWithdraw" onclick="switchWalletTab('withdraw')" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-slate-400 hover:text-white transition cursor-pointer">
             Withdraw Funds
           </button>
         </div>
-        <button onclick="closeWalletModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-lg cursor-pointer">✕</button>
+        <button type="button" onclick="closeWalletModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-lg cursor-pointer">✕</button>
       </div>
 
       <!-- DEPOSIT PANEL -->
       <div id="depositPanel" class="p-6 space-y-5">
         <div class="grid grid-cols-3 gap-2">
-          <button onclick="selectDepositMethod('mpesa')" id="depMethod-mpesa" class="dep-method-btn py-2.5 px-2 rounded-xl border border-emerald-500/50 bg-emerald-500/15 text-emerald-300 text-xs font-bold cursor-pointer">M-Pesa Till</button>
-          <button onclick="selectDepositMethod('usdt')" id="depMethod-usdt" class="dep-method-btn py-2.5 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-xs font-semibold cursor-pointer">USDT (TRC20)</button>
-          <button onclick="selectDepositMethod('bank')" id="depMethod-bank" class="dep-method-btn py-2.5 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-xs font-semibold cursor-pointer">Bank Transfer</button>
+          <button type="button" onclick="selectDepositMethod('mpesa')" id="depMethod-mpesa" class="dep-method-btn py-2.5 px-2 rounded-xl border border-emerald-500/50 bg-emerald-500/15 text-emerald-300 text-xs font-bold cursor-pointer">M-Pesa Buy Goods</button>
+          <button type="button" onclick="selectDepositMethod('usdt')" id="depMethod-usdt" class="dep-method-btn py-2.5 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-xs font-semibold cursor-pointer">USDT (TRC20)</button>
+          <button type="button" onclick="selectDepositMethod('bank')" id="depMethod-bank" class="dep-method-btn py-2.5 px-2 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-xs font-semibold cursor-pointer">Bank Transfer</button>
         </div>
 
+        <!-- Deposit Destination Till Box (Shown when Deposit is opened) -->
         <div id="mpesaTillBox" class="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/80 via-[#0C1D18] to-slate-950 border border-emerald-500/40 space-y-3">
           <div class="flex items-center justify-between">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-slate-950">
-              Lipa Na M-Pesa • Buy Goods
+              Deposit Destination • Buy Goods Till
             </span>
-            <span class="text-[11px] text-emerald-300 font-mono-num">Till 1957147</span>
+            <span class="text-[11px] text-emerald-300 font-mono-num">Lipa na M-Pesa</span>
           </div>
 
           <div class="flex items-center justify-between bg-black/50 p-3 rounded-xl border border-emerald-500/30">
             <div>
-              <div class="text-[11px] text-slate-400">Official Buy Goods Till Number</div>
-              <div class="text-2xl sm:text-3xl font-extrabold font-mono-num text-white tracking-wider">1957147</div>
+              <div class="text-[11px] text-slate-400">Deposit Till Number</div>
+              <div id="tillNumberDisplay" class="text-2xl sm:text-3xl font-extrabold font-mono-num text-white tracking-wider">1957147</div>
             </div>
             <button type="button" onclick="copyTillNumber()" id="copyTillBtn" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition cursor-pointer">
               Copy Till
@@ -546,9 +593,9 @@
           </div>
 
           <ol class="text-[11px] text-slate-300 space-y-1 list-decimal list-inside">
-            <li>Go to <strong class="text-white">M-Pesa</strong> → <strong class="text-white">Lipa na M-Pesa</strong> → <strong class="text-emerald-400">Buy Goods and Services</strong></li>
-            <li>Enter Till Number <strong class="text-amber-300 font-mono-num">1957147</strong> and your deposit amount in KES</li>
-            <li>Enter your PIN and paste your <strong class="text-white">M-Pesa Confirmation Code</strong> below</li>
+            <li>Open <strong class="text-white">M-Pesa</strong> → <strong class="text-white">Lipa na M-Pesa</strong> → <strong class="text-emerald-400">Buy Goods and Services</strong></li>
+            <li>Enter Till Number <strong class="text-amber-300 font-mono-num">1957147</strong> and your deposit amount</li>
+            <li>Enter your PIN and submit your <strong class="text-white">M-Pesa Confirmation Code</strong> below</li>
           </ol>
         </div>
 
@@ -654,7 +701,7 @@
     <div class="glass-panel w-full max-w-md rounded-2xl border border-white/15 p-6 space-y-5">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-bold text-white">Rebalance AI Bot Capital Pool</h3>
-        <button onclick="closeAllocationModal()" class="text-slate-400 hover:text-white cursor-pointer">✕</button>
+        <button type="button" onclick="closeAllocationModal()" class="text-slate-400 hover:text-white cursor-pointer">✕</button>
       </div>
       <p class="text-xs text-slate-400">Move funds between your Available Wallet and the AI Trading Bot Pool.</p>
       <div class="space-y-3">
@@ -664,7 +711,7 @@
         </div>
         <input id="allocationSlider" type="range" min="0" max="100" step="1" value="0" oninput="previewAllocationSlider()" class="w-full accent-amber-400 cursor-pointer" />
       </div>
-      <button onclick="saveAllocation()" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm cursor-pointer">
+      <button type="button" onclick="saveAllocation()" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm cursor-pointer">
         Save Capital Allocation
       </button>
     </div>
@@ -715,6 +762,68 @@
     };
     const candleSeries = {};
 
+    // =========================================================
+    // BOOT & TOOL SYNC ANIMATION
+    // =========================================================
+    function markSynced(id, label) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium';
+      el.textContent = `✓ ${label}`;
+    }
+
+    async function runBootSync() {
+      const bar = document.getElementById('bootProgressBar');
+      const pct = document.getElementById('bootPercent');
+      const status = document.getElementById('bootStatusText');
+      const loader = document.getElementById('bootLoader');
+
+      const setStep = (p, text) => {
+        bar.style.width = `${p}%`;
+        pct.textContent = `${p}%`;
+        status.textContent = text;
+      };
+
+      setStep(22, 'Syncing candlestick & indicator feeds...');
+      initCandles();
+      await new Promise(r => setTimeout(r, 220));
+      markSynced('syncItemCandles', 'Candles & EMA Ready');
+
+      setStep(48, 'Syncing market session & candle clocks...');
+      updateLiveCountdowns();
+      await new Promise(r => setTimeout(r, 220));
+      markSynced('syncItemClocks', 'Session Clocks Synced');
+
+      setStep(74, 'Warming AI market scanner & signals...');
+      renderScannerWatchlist();
+      await new Promise(r => setTimeout(r, 220));
+      markSynced('syncItemScanner', 'AI Scanner Online');
+
+      setStep(92, 'Loading client session & portfolio vault...');
+      if (hasCloud) {
+        const { data } = await sb.auth.getSession();
+        if (data?.session?.user) {
+          currentUser = data.session.user;
+          await loadClientData();
+        }
+      } else {
+        const active = localStorage.getItem('aq_v5_active');
+        const users = JSON.parse(localStorage.getItem('aq_v5_users') || '{}');
+        if (active && users[active]) {
+          currentUser = users[active];
+          await loadClientData();
+        }
+      }
+      markSynced('syncItemVault', 'Client Vault Ready');
+
+      setStep(100, 'All trading tools synchronized.');
+      renderApp();
+      await new Promise(r => setTimeout(r, 260));
+
+      loader.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => loader.classList.add('hidden'), 500);
+    }
+
     function initCandles() {
       Object.keys(marketAssets).forEach(pair => {
         const asset = marketAssets[pair];
@@ -737,7 +846,7 @@
       });
     }
 
-    function userKey(uid, part) { return `aq_v4_${uid}_${part}`; }
+    function userKey(uid, part) { return `aq_v5_${uid}_${part}`; }
 
     function saveClientLocal() {
       if (!currentUser) return;
@@ -779,7 +888,6 @@
         transactions = JSON.parse(localStorage.getItem(userKey(currentUser.id, 'tx')) || '[]');
         saveClientLocal();
       }
-      renderApp();
     }
 
     async function syncWallet() {
@@ -832,18 +940,20 @@
         if (data.user) {
           currentUser = data.user;
           await loadClientData();
-          showToast('Account created! Deposit via Till 1957147 to fund trades.', 'success');
+          renderApp();
+          showToast('Account created! Tap Deposit to view payment details and fund trades.', 'success');
         }
       } else {
-        const users = JSON.parse(localStorage.getItem('aq_v4_users') || '{}');
+        const users = JSON.parse(localStorage.getItem('aq_v5_users') || '{}');
         if (users[email]) return showToast('Email already registered. Please sign in.', 'error');
         const u = { id: btoa(email), email, password, full_name, phone };
         users[email] = u;
-        localStorage.setItem('aq_v4_users', JSON.stringify(users));
-        localStorage.setItem('aq_v4_active', email);
+        localStorage.setItem('aq_v5_users', JSON.stringify(users));
+        localStorage.setItem('aq_v5_active', email);
         currentUser = u;
         await loadClientData();
-        showToast('Account created! Deposit via Till 1957147 to start trading.', 'success');
+        renderApp();
+        showToast('Account created! Tap Deposit to view payment details and fund trades.', 'success');
       }
     }
 
@@ -857,25 +967,27 @@
         if (error) return showToast(error.message, 'error');
         currentUser = data.user;
         await loadClientData();
+        renderApp();
         showToast('Signed in successfully.', 'success');
       } else {
-        const users = JSON.parse(localStorage.getItem('aq_v4_users') || '{}');
+        const users = JSON.parse(localStorage.getItem('aq_v5_users') || '{}');
         if (!users[email] && email === 'client@aetherquant.io') {
           users[email] = { id: btoa(email), email, password, full_name: 'Client Trader', phone: '0712 345 678' };
-          localStorage.setItem('aq_v4_users', JSON.stringify(users));
+          localStorage.setItem('aq_v5_users', JSON.stringify(users));
         }
         const u = users[email];
         if (!u || u.password !== password) return showToast('Invalid email or password.', 'error');
-        localStorage.setItem('aq_v4_active', email);
+        localStorage.setItem('aq_v5_active', email);
         currentUser = u;
         await loadClientData();
+        renderApp();
         showToast(`Welcome back, ${u.full_name}!`, 'success');
       }
     }
 
     async function handleLogout() {
       if (hasCloud) await sb.auth.signOut();
-      else localStorage.removeItem('aq_v4_active');
+      else localStorage.removeItem('aq_v5_active');
       currentUser = null;
       renderApp();
       showToast('Logged out.', 'info');
@@ -1102,29 +1214,42 @@
       wallet.bot_active = !wallet.bot_active;
       syncWallet();
       renderBotUI();
+      showToast(wallet.bot_active ? 'AI Trading Bot activated.' : 'AI Trading Bot paused.', wallet.bot_active ? 'success' : 'info');
     }
 
     function setRiskMode(mode) {
       wallet.risk_mode = mode;
       syncWallet();
       renderBotUI();
+      showToast(`Risk strategy set to ${mode}.`, 'info');
     }
 
     function renderBotUI() {
       const t = document.getElementById('botMasterToggle');
       const k = document.getElementById('botToggleKnob');
       const badge = document.getElementById('navBotBadge');
+      const scanDot = document.getElementById('scannerDot');
+      const scanText = document.getElementById('scannerStatusText');
+      const scanBar = document.getElementById('scannerBar');
+
       if (wallet.bot_active) {
         t.className = 'relative inline-flex h-8 w-16 items-center rounded-full bg-emerald-500 transition-colors cursor-pointer p-1';
         k.className = 'inline-block h-6 w-6 transform rounded-full bg-slate-950 font-bold text-[10px] flex items-center justify-center translate-x-8 transition-transform shadow';
         k.textContent = 'ON';
         badge.classList.remove('hidden');
+        scanDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-live-dot';
+        scanText.textContent = 'Scanning Liquidity & RSI...';
+        scanBar.classList.remove('hidden');
       } else {
         t.className = 'relative inline-flex h-8 w-16 items-center rounded-full bg-slate-700 transition-colors cursor-pointer p-1';
         k.className = 'inline-block h-6 w-6 transform rounded-full bg-slate-300 text-slate-950 font-bold text-[10px] flex items-center justify-center translate-x-0 transition-transform shadow';
         k.textContent = 'OFF';
         badge.classList.add('hidden');
+        scanDot.className = 'w-2 h-2 rounded-full bg-slate-500';
+        scanText.textContent = 'Scanner Standby';
+        scanBar.classList.add('hidden');
       }
+
       ['Conservative', 'Balanced', 'Aggressive'].forEach(m => {
         const b = document.getElementById(`risk-${m}`);
         b.className = wallet.risk_mode === m
@@ -1137,7 +1262,7 @@
       if (!currentUser) return;
       const cap = Number(wallet.bot_capital_usd);
       if (cap < 5) {
-        if (manual) showToast('Deposit via Till 1957147 & allocate at least $5 to AI Bot Capital first.', 'error');
+        if (manual) showToast('Tap Deposit to fund your account and allocate at least $5 to the AI Bot pool first.', 'error');
         return;
       }
       const mult = wallet.risk_mode === 'Conservative' ? 0.003 : wallet.risk_mode === 'Balanced' ? 0.007 : 0.014;
@@ -1215,8 +1340,8 @@
 
     function copyTillNumber() {
       navigator.clipboard?.writeText(TILL_NUMBER);
-      document.getElementById('copyTillBtn').textContent = 'Copied 1957147!';
-      showToast('M-Pesa Buy Goods Till 1957147 copied!', 'success');
+      document.getElementById('copyTillBtn').textContent = 'Copied!';
+      showToast('Deposit Till number copied to clipboard.', 'success');
       setTimeout(() => { document.getElementById('copyTillBtn').textContent = 'Copy Till'; }, 2000);
     }
 
@@ -1253,7 +1378,7 @@
       if (toBot) wallet.bot_capital_usd = +(Number(wallet.bot_capital_usd) + usd).toFixed(2);
       else wallet.available_usd = +(Number(wallet.available_usd) + usd).toFixed(2);
 
-      const method = currentDepositMethod === 'mpesa' ? `M-Pesa Till ${TILL_NUMBER}` : currentDepositMethod === 'usdt' ? 'USDT (TRC20)' : 'Bank Transfer';
+      const method = currentDepositMethod === 'mpesa' ? 'M-Pesa Buy Goods' : currentDepositMethod === 'usdt' ? 'USDT (TRC20)' : 'Bank Transfer';
       const ref = code || `DEP-${Math.floor(100000 + Math.random() * 900000)}`;
       const txRow = { user_id: currentUser.id, tx_type: 'DEPOSIT', method, reference: ref, amount_usd: usd, status: 'COMPLETED', created_at: new Date().toISOString() };
 
@@ -1267,4 +1392,235 @@
       renderLedgerTable();
       document.getElementById('depositAmountInput').value = '';
       document.getElementById('mpesaCodeInput').value = '';
-      closeWalletModal
+      updateDepositPreview();
+      closeWalletModal();
+      showToast(`Credited $${usd.toFixed(2)} via ${method}!`, 'success');
+    }
+
+    function updateWithdrawFields() {
+      const m = document.getElementById('withdrawMethodSelect').value;
+      const lbl = document.getElementById('withdrawDestLabel');
+      const inp = document.getElementById('withdrawDestInput');
+      if (m.includes('M-Pesa')) { lbl.textContent = 'Recipient M-Pesa Phone Number'; inp.placeholder = 'e.g. 0712 345 678'; }
+      else if (m.includes('USDT')) { lbl.textContent = 'USDT (TRC20) Wallet Address'; inp.placeholder = 'e.g. TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE'; }
+      else { lbl.textContent = 'Bank Name & Account Number'; inp.placeholder = 'e.g. KCB Bank - 1290485712'; }
+    }
+
+    function fillMaxWithdraw() {
+      document.getElementById('withdrawAmountInput').value = Number(wallet.available_usd).toFixed(2);
+      updateWithdrawPreview();
+    }
+
+    function updateWithdrawPreview() {
+      const amt = parseFloat(document.getElementById('withdrawAmountInput').value) || 0;
+      document.getElementById('withdrawPayoutPreview').textContent =
+        `Net Payout: $${amt.toFixed(2)} USD / KES ${(amt * KES_RATE).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+    }
+
+    async function submitWithdrawal(e) {
+      e.preventDefault();
+      const amt = parseFloat(document.getElementById('withdrawAmountInput').value);
+      const method = document.getElementById('withdrawMethodSelect').value;
+      const dest = document.getElementById('withdrawDestInput').value.trim();
+
+      if (!amt || amt < 5) return showToast('Minimum withdrawal is $5.00.', 'error');
+      if (amt > Number(wallet.available_usd)) return showToast('Insufficient Available Wallet balance.', 'error');
+
+      wallet.available_usd = +(Number(wallet.available_usd) - amt).toFixed(2);
+      const txRow = { user_id: currentUser.id, tx_type: 'WITHDRAWAL', method, reference: dest, amount_usd: amt, status: 'PENDING', created_at: new Date().toISOString() };
+
+      if (hasCloud) {
+        const { error } = await sb.from('transactions').insert(txRow);
+        if (error) return showToast(error.message, 'error');
+      }
+      transactions.unshift(txRow);
+      await syncWallet();
+      renderKPIs();
+      renderLedgerTable();
+      document.getElementById('withdrawAmountInput').value = '';
+      updateWithdrawPreview();
+      closeWalletModal();
+      showToast(`Withdrawal of $${amt.toFixed(2)} submitted for ${dest}.`, 'success');
+    }
+
+    function openAllocationModal() {
+      const total = +(Number(wallet.available_usd) + Number(wallet.bot_capital_usd)).toFixed(2);
+      const sl = document.getElementById('allocationSlider');
+      sl.max = total; sl.value = wallet.bot_capital_usd;
+      previewAllocationSlider();
+      document.getElementById('allocationModal').classList.remove('hidden');
+      document.getElementById('allocationModal').classList.add('flex');
+    }
+
+    function closeAllocationModal() {
+      document.getElementById('allocationModal').classList.add('hidden');
+      document.getElementById('allocationModal').classList.remove('flex');
+    }
+
+    function previewAllocationSlider() {
+      const total = +(Number(wallet.available_usd) + Number(wallet.bot_capital_usd)).toFixed(2);
+      const botVal = parseFloat(document.getElementById('allocationSlider').value);
+      document.getElementById('allocWalletPreview').textContent = `$${(total - botVal).toFixed(2)}`;
+      document.getElementById('allocBotPreview').textContent = `$${botVal.toFixed(2)}`;
+    }
+
+    async function saveAllocation() {
+      const total = +(Number(wallet.available_usd) + Number(wallet.bot_capital_usd)).toFixed(2);
+      const botVal = parseFloat(document.getElementById('allocationSlider').value);
+      wallet.bot_capital_usd = +botVal.toFixed(2);
+      wallet.available_usd = +(total - botVal).toFixed(2);
+      await syncWallet();
+      renderKPIs();
+      closeAllocationModal();
+      showToast('AI Bot capital updated.', 'success');
+    }
+
+    function setCurrency(c) {
+      currency = c;
+      document.getElementById('currUsdBtn').className = c === 'USD' ? 'px-2.5 py-1 rounded-md bg-amber-400 text-slate-950 font-bold transition cursor-pointer' : 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-semibold transition cursor-pointer';
+      document.getElementById('currKesBtn').className = c === 'KES' ? 'px-2.5 py-1 rounded-md bg-amber-400 text-slate-950 font-bold transition cursor-pointer' : 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white font-semibold transition cursor-pointer';
+      renderKPIs(); renderTradesTable(); renderLedgerTable();
+    }
+
+    function renderKPIs() {
+      const total = Number(wallet.available_usd) + Number(wallet.bot_capital_usd);
+      document.getElementById('kpiTotalEquity').textContent = formatMoney(total);
+      document.getElementById('kpiTotalEquitySub').textContent = currency === 'USD'
+        ? `≈ KES ${(total * KES_RATE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        : `≈ $${total.toFixed(2)} USD`;
+      document.getElementById('kpiAvailableWallet').textContent = formatMoney(wallet.available_usd);
+      document.getElementById('kpiBotCapital').textContent = formatMoney(wallet.bot_capital_usd);
+      document.getElementById('kpiNetProfit').textContent = formatMoney(wallet.net_profit_usd, true);
+      document.getElementById('kpiTradesCount').textContent = `${wallet.trades_count || 0} Executed AI Trades`;
+    }
+
+    function renderScannerWatchlist() {
+      const el = document.getElementById('scannerWatchlist');
+      if (!el) return;
+      el.innerHTML = Object.keys(marketAssets).map(pair => {
+        const a = marketAssets[pair];
+        const px = candleSeries[pair] ? candleSeries[pair][candleSeries[pair].length - 1].close.toFixed(a.decimals) : a.basePrice;
+        const pos = a.change24h.startsWith('+');
+        return `
+          <div onclick="selectPair('${pair}')" class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 cursor-pointer transition">
+            <div>
+              <div class="text-xs font-bold text-white">${pair}</div>
+              <div class="text-[10px] font-mono-num text-emerald-400">${a.signal}</div>
+            </div>
+            <div class="text-right font-mono-num">
+              <div class="text-xs font-semibold text-white">$${px}</div>
+              <div class="text-[11px] ${pos ? 'text-emerald-400' : 'text-rose-400'}">${a.change24h}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderTradesTable() {
+      const tb = document.getElementById('aiTradesTableBody');
+      if (!tb) return;
+      tb.innerHTML = aiTrades.length
+        ? aiTrades.map(t => {
+            const win = Number(t.pnl_usd) >= 0;
+            const buy = t.side === 'BUY';
+            return `
+              <tr class="hover:bg-white/[0.02]">
+                <td class="py-2.5 px-2 font-bold text-white">${t.pair}</td>
+                <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${buy ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'}">${t.side}</span></td>
+                <td class="py-2.5 px-2 text-slate-300">$${Number(t.entry_price).toFixed(2)}</td>
+                <td class="py-2.5 px-2 text-right font-bold ${win ? 'text-emerald-400' : 'text-rose-400'}">${formatMoney(t.pnl_usd, true)}</td>
+              </tr>`;
+          }).join('')
+        : `<tr><td colspan="4" class="py-4 text-center text-slate-500">No bot trades executed yet.</td></tr>`;
+    }
+
+    function filterLedger(type) {
+      ledgerFilter = type;
+      ['ALL', 'DEPOSIT', 'WITHDRAWAL'].forEach(f => {
+        const b = document.getElementById(`ledg-${f}`);
+        if (b) b.className = f === type ? 'ledg-btn px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-bold cursor-pointer' : 'ledg-btn px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 cursor-pointer';
+      });
+      renderLedgerTable();
+    }
+
+    function renderLedgerTable() {
+      const tb = document.getElementById('ledgerTableBody');
+      if (!tb) return;
+      const rows = transactions.filter(tx => ledgerFilter === 'ALL' || tx.tx_type === ledgerFilter);
+      tb.innerHTML = rows.length
+        ? rows.map(tx => {
+            const dep = tx.tx_type === 'DEPOSIT';
+            return `
+              <tr class="hover:bg-white/[0.02]">
+                <td class="py-2.5 px-2"><span class="font-bold ${dep ? 'text-emerald-400' : 'text-amber-300'}">${tx.tx_type}</span><span class="block text-[10px] text-slate-400">${tx.method}</span></td>
+                <td class="py-2.5 px-2 text-slate-300">${tx.reference}</td>
+                <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">${tx.status}</span></td>
+                <td class="py-2.5 px-2 text-right font-bold ${dep ? 'text-emerald-400' : 'text-white'}">${dep ? '+' : '-'}${formatMoney(tx.amount_usd)}</td>
+              </tr>`;
+          }).join('')
+        : `<tr><td colspan="4" class="py-4 text-center text-slate-500">No transactions in ledger yet.</td></tr>`;
+    }
+
+    function showToast(message, type = 'info') {
+      const box = document.getElementById('toastContainer');
+      const d = document.createElement('div');
+      const cls = type === 'success' ? 'border-emerald-500/50 bg-slate-950/95 text-emerald-300'
+        : type === 'error' ? 'border-rose-500/50 bg-slate-950/95 text-rose-300'
+        : 'border-amber-400/50 bg-slate-950/95 text-amber-200';
+      d.className = `pointer-events-auto px-4 py-3 rounded-xl border ${cls} shadow-xl text-xs font-medium backdrop-blur-md`;
+      d.textContent = message;
+      box.appendChild(d);
+      setTimeout(() => d.remove(), 3200);
+    }
+
+    function renderApp() {
+      const authSec = document.getElementById('authSection');
+      const dashSec = document.getElementById('dashboardSection');
+      if (!currentUser) {
+        authSec.classList.remove('hidden');
+        dashSec.classList.add('hidden');
+      } else {
+        authSec.classList.add('hidden');
+        dashSec.classList.remove('hidden');
+        document.getElementById('userDisplayName').textContent = wallet.full_name || 'Client Trader';
+        const init = (wallet.full_name || 'CT').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('userAvatar').textContent = init;
+        setCurrency(currency);
+        renderBotUI();
+        renderScannerWatchlist();
+        renderTradesTable();
+        renderLedgerTable();
+        selectPair(selectedPair);
+        setTimeframe(timeframeLabel, timeframeSeconds);
+      }
+    }
+
+    setInterval(() => {
+      Object.keys(marketAssets).forEach(pair => {
+        const s = candleSeries[pair];
+        const last = s[s.length - 1];
+        const tick = (Math.random() - 0.485) * (marketAssets[pair].volScale * 0.25);
+        last.close = +(last.close + tick).toFixed(marketAssets[pair].decimals);
+        if (last.close > last.high) last.high = last.close;
+        if (last.close < last.low) last.low = last.close;
+        last.volume += Math.floor(Math.random() * 12);
+      });
+      if (currentUser) {
+        drawCandlestickChart();
+        renderScannerWatchlist();
+        const pairs = Object.keys(marketAssets);
+        const sp = pairs[Math.floor(Math.random() * pairs.length)];
+        document.getElementById('scannerSignalDetail').innerHTML =
+          `<span>Pair: <strong class="text-white">${sp}</strong></span><span>RSI(14): <strong class="text-emerald-400">${marketAssets[sp].rsi}</strong></span>`;
+        if (wallet.bot_active && Number(wallet.bot_capital_usd) >= 5 && Math.random() < 0.16) {
+          runBotTrade(false);
+        }
+      }
+    }, 2200);
+
+    setInterval(updateLiveCountdowns, 1000);
+    window.addEventListener('resize', drawCandlestickChart);
+
+    runBootSync();
+  </script>
+</body>
+</html>
