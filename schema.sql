@@ -12,7 +12,7 @@ create table if not exists public.wallets (
   updated_at timestamptz not null default now()
 );
 
--- 2. Deposits & Withdrawals (M-Pesa Till 1957147)
+-- 2. Deposits & Withdrawals (Till 1957147 STK & Ledger)
 create table if not exists public.transactions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
